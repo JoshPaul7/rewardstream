@@ -1,0 +1,78 @@
+# =============================================================
+# Terraform
+# =============================================================
+# Local working directory (providers, modules) at any depth
+**/.terraform/*
+
+# State files and their backups (terraform.tfstate, *.tfstate.backup,
+# timestamped backups, and .terraform.tfstate.lock.info)
+*.tfstate
+*.tfstate.*
+
+# Saved plan files. These contain values in PLAINTEXT, including
+# sensitive ones, so they must never be committed.
+*.tfplan
+tfplan
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Variable files can contain real values (passwords, account IDs, IPs).
+# Ignore them all, then re-include the example template.
+*.tfvars
+*.tfvars.json
+!*.example.tfvars
+!*.example.tfvars.json
+
+# Local overrides: developer-specific, never shared
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform CLI config (can contain registry/cloud tokens)
+.terraformrc
+terraform.rc
+
+# NOTE: .terraform.lock.hcl is intentionally NOT ignored, so commit it.
+# It pins provider versions and checksums.
+
+# =============================================================
+# Secrets: env files and kubeconfigs
+# =============================================================
+.env
+.env.*
+*.env
+!.env.example
+
+kubeconfig
+kubeconfig*
+*.kubeconfig
+.kube/
+
+# =============================================================
+# Go build output (any depth, e.g. services/ingest-api/bin/)
+# =============================================================
+bin/
+dist/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.*
+
+# =============================================================
+# Editor / OS clutter
+# =============================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
