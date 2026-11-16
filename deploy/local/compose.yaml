@@ -1,0 +1,9 @@
+name: rewardstream-local
+services:
+  floci:
+    image: floci/floci:2.4.0@sha256:5ee85db604c4aa74ac76e07ea5cc83086f37bb472bf3dbb97e34019e48efae9c
+    ports:
+      - "127.0.0.1:4566:4566"
+    environment:
+      FLOCI_DEFAULT_REGION: ap-south-1
+      FLOCI_STORAGE_MODE: memory
