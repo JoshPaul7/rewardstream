@@ -34,6 +34,22 @@ aws sqs set-queue-attributes --queue-url "$q_url" --attributes "$attrs"
 aws sns subscribe --topic-arn "$topic_arn" --protocol sqs --notification-endpoint "$q_arn" \
   --attributes RawMessageDelivery=true --return-subscription-arn --output text >/dev/null
 
+# Single table: dedup markers (EVENT#id) + daily campaign counters (CAMPAIGN#id / DAY#date).
+if ! aws dynamodb describe-table --table-name rewardstream >/dev/null 2>&1; then
+  aws dynamodb create-table --table-name rewardstream \
+    --attribute-definitions AttributeName=pk,AttributeType=S AttributeName=sk,AttributeType=S \
+    --key-schema AttributeName=pk,KeyType=HASH AttributeName=sk,KeyType=RANGE \
+    --billing-mode PAY_PER_REQUEST >/dev/null
+  aws dynamodb wait table-exists --table-name rewardstream
+fi
+ttl=$(aws dynamodb describe-time-to-live --table-name rewardstream \
+  --query TimeToLiveDescription.TimeToLiveStatus --output text)
+if [ "$ttl" != "ENABLED" ]; then
+  aws dynamodb update-time-to-live --table-name rewardstream \
+    --time-to-live-specification Enabled=true,AttributeName=expires_at >/dev/null
+fi
+
 echo "RS_TOPIC_ARN=$topic_arn"
 echo "QUEUE_URL=$q_url"
 echo "DLQ_URL=$dlq_url"
+echo "RS_TABLE=rewardstream"
