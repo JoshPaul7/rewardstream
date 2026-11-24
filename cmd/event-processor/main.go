@@ -15,6 +15,7 @@ import (
 	"github.com/JoshPaul7/rewardstream/internal/awsenv"
 	"github.com/JoshPaul7/rewardstream/internal/dynstore"
 	"github.com/JoshPaul7/rewardstream/internal/processor"
+	"github.com/JoshPaul7/rewardstream/internal/s3sink"
 )
 
 func main() {
@@ -42,10 +43,18 @@ func run(log *slog.Logger) error {
 		return err
 	}
 
+	// A nil interface, not a nil *s3sink.Sink: see explain-back 2.
+	var lake processor.Lake
+	if bucket := os.Getenv("RS_LAKE_BUCKET"); bucket != "" {
+		lake = s3sink.New(cfg, bucket, mode == awsenv.ModeLocal)
+	}
+
 	p := &processor.Processor{
 		Queue: sqs.NewFromConfig(cfg), QueueURL: queueURL,
-		Store: dynstore.New(cfg, table), Log: log, Now: time.Now,
+		Store: dynstore.New(cfg, table), Lake: lake, Log: log, Now: time.Now,
 	}
+	log.Info("consuming", "queue", queueURL, "mode", mode, "lake", os.Getenv("RS_LAKE_BUCKET"))
+
 	log.Info("consuming", "queue", queueURL, "mode", mode)
 	err = p.Run(ctx)
 	log.Info("stopped")

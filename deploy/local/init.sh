@@ -49,7 +49,13 @@ if [ "$ttl" != "ENABLED" ]; then
     --time-to-live-specification Enabled=true,AttributeName=expires_at >/dev/null
 fi
 
+if ! aws s3api head-bucket --bucket rewardstream-lake-local >/dev/null 2>&1; then
+  aws s3api create-bucket --bucket rewardstream-lake-local \
+    --create-bucket-configuration LocationConstraint=ap-south-1 >/dev/null
+fi
+
 echo "RS_TOPIC_ARN=$topic_arn"
 echo "QUEUE_URL=$q_url"
 echo "DLQ_URL=$dlq_url"
 echo "RS_TABLE=rewardstream"
+echo "RS_LAKE_BUCKET=rewardstream-lake-local"
