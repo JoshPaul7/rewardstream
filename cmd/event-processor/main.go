@@ -54,8 +54,6 @@ func run(log *slog.Logger) error {
 		Store: dynstore.New(cfg, table), Lake: lake, Log: log, Now: time.Now,
 	}
 	log.Info("consuming", "queue", queueURL, "mode", mode, "lake", os.Getenv("RS_LAKE_BUCKET"))
-
-	log.Info("consuming", "queue", queueURL, "mode", mode)
 	err = p.Run(ctx)
 	log.Info("stopped")
 	return err
